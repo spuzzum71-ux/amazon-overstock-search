@@ -22,7 +22,26 @@ function validSearch(){if(!$('q').value.trim()){status('Enter a product first.')
 function params(){const p=new URLSearchParams({k:$('q').value.trim(),i:$('cat').value,s:$('sort').value});for(const [id,key] of [['min','low-price'],['max','high-price']])if($(id).value!=='')p.set(key,String(Number($(id).value)));const r=[];if($('rating').value)r.push('p_72:'+$('rating').value+'0000');if($('prime').checked)r.push('p_85:5690392011');if(r.length)p.set('rh',r.join(','));return p}
 function amazonSearchURL(){return 'https://www.amazon.ca/s?'+params().toString()}
 function link(text,url){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.className='linkbtn';a.textContent=text;return a}
-function searchAreas(){if(!validSearch())return;const root=$('results');root.replaceChildren();const h=document.createElement('h3');h.textContent=mode==='all'?'Search all selected areas':'Search selected area';root.append(h);const notice=document.createElement('p');notice.className='muted';notice.textContent='Amazon-wide keyword search is available for every selection. For special areas, open its landing page as well and search/browse there. These are not automatically combined product results.';root.append(notice);const url=amazonSearchURL();for(const id of selectedAreas()){const area=areas.find(a=>a.id===id);const item=document.createElement('div');item.className='item';const title=document.createElement('strong');title.textContent=area.name;const p=document.createElement('p');p.className='muted small';p.textContent=area.desc+(id==='regular'?' · Keyword search with requested filters.':' · Special-section keyword filtering not independently verified.');item.append(title,p,link('Keyword search ↗',url));if(id!=='regular')item.append(link('Browse '+area.name+' ↗',area.url));root.append(item)}status(selectedAreas().length+' search area(s) prepared. Open each link and verify Amazon prices and filters.')}
+function searchAreas(){
+ if(!validSearch())return;
+ const root=$('results');root.replaceChildren();
+ const heading=document.createElement('h3');heading.textContent='Your search options';root.append(heading);
+ const intro=document.createElement('p');intro.className='notice';intro.textContent='Important: Amazon does not provide this app with a verified keyword-search filter for Outlet, Resale, Deals, Coupons or Renewed. We will not label ordinary Amazon results as special-section results.';root.append(intro);
+ const selected=selectedAreas();
+ const standard=document.createElement('div');standard.className='item';
+ const standardTitle=document.createElement('strong');standardTitle.textContent='Search Amazon.ca for “'+$('q').value.trim()+'”';
+ const standardInfo=document.createElement('p');standardInfo.className='muted';standardInfo.textContent='This is a regular Amazon-wide keyword search, not an Outlet or Resale-only search. Requested Amazon filters may not be honoured.';
+ standard.append(standardTitle,standardInfo,link('Search Amazon.ca ↗',amazonSearchURL()));root.append(standard);
+ for(const id of selected){
+  if(id==='regular')continue;
+  const area=areas.find(a=>a.id===id);const item=document.createElement('div');item.className='item';
+  const title=document.createElement('strong');title.textContent=area.name;
+  const p=document.createElement('p');p.className='muted small';p.textContent=area.desc+' · Browse this Amazon section, then use its own search/filter controls if offered. Your keyword is NOT applied to this link.';
+  item.append(title,p,link('Browse '+area.name+' ↗',area.url));root.append(item);
+ }
+ status('Prepared 1 Amazon keyword search and '+selected.filter(id=>id!=='regular').length+' special-section browse link(s). No live prices or verified section-specific keyword searches.');
+ root.scrollIntoView({behavior:'smooth',block:'start'});
+}
 function currentFields(){return Object.fromEntries(fieldIds.map(id=>[id,$(id).type==='checkbox'?$(id).checked:$(id).value]))}
 function getSaved(){try{const raw=localStorage.getItem(KEY);if(!raw)return [];const data=JSON.parse(raw);if(!Array.isArray(data))throw Error();return data.filter(s=>s&&typeof s==='object'&&typeof s.q==='string'&&s.q.trim()).slice(0,100)}catch{status('Saved searches could not be read.');return []}}
 function writeSaved(data){try{localStorage.setItem(KEY,JSON.stringify(data));return true}catch{status('Browser storage unavailable.');return false}}
