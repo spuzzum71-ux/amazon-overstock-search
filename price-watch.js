@@ -3,14 +3,14 @@ const $=id=>document.getElementById(id),KEY='dealhunter-v3-price-watch';
 let items=[];
 try{const raw=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(raw))items=raw.filter(x=>x&&Array.isArray(x.history)&&(validAsin(x.asin)||validShort(x.shortUrl)));}catch{}
 function validAsin(x){return typeof x==='string'&&/^[A-Z0-9]{10}$/.test(x)}
-function validShort(x){return typeof x==='string'&&/^https:\/\/a\.co\/[A-Za-z0-9]+$/.test(x)}
+function validShort(x){return typeof x==='string'&&/^https:\/\/a\.co\/d\/[A-Za-z0-9]+$/.test(x)}
 const msg=s=>$('message').textContent=s;
 const money=n=>new Intl.NumberFormat('en-CA',{style:'currency',currency:'CAD'}).format(n);
 function product(raw){
  let u;try{u=new URL(raw.trim())}catch{throw Error('Enter a complete Amazon.ca or a.co product URL.')}
  if(u.protocol!=='https:'||u.username||u.password||u.port)throw Error('Use a secure Amazon product URL.');
  if(u.hostname==='a.co'){
-  if(!/^\/[A-Za-z0-9]+\/?$/.test(u.pathname)||u.search||u.hash)throw Error('Enter a valid a.co product link.');
+  if(!/^\/d\/[A-Za-z0-9]+\/?$/.test(u.pathname)||u.search||u.hash)throw Error('Enter a valid a.co product link.');
   return {shortUrl:'https://a.co'+u.pathname.replace(/\/$/,'')};
  }
  if(!['amazon.ca','www.amazon.ca','smile.amazon.ca'].includes(u.hostname))throw Error('Use an Amazon.ca or a.co product URL.');
