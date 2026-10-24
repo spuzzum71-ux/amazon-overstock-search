@@ -1,4 +1,4 @@
-const CACHE='deal-hunter-v1-fix-20261024-1';
+const CACHE='deal-hunter-v2-20261024-1';
 const ASSETS=['./','./index.html','./app.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 const scope=new URL(self.registration.scope);
 const shellPaths=new Set(ASSETS.map(p=>new URL(p,scope).pathname));
