@@ -10,8 +10,9 @@ function product(raw){
  let u;try{u=new URL(raw.trim())}catch{throw Error('Enter a complete Amazon.ca or a.co product URL.')}
  if(u.protocol!=='https:'||u.username||u.password||u.port)throw Error('Use a secure Amazon product URL.');
  if(u.hostname==='a.co'){
-  if(!/^\/d\/[A-Za-z0-9]+\/?$/.test(u.pathname)||u.search||u.hash)throw Error('Enter a valid a.co product link.');
-  return {shortUrl:'https://a.co'+u.pathname.replace(/\/$/,'')};
+  const match=u.pathname.match(/^\/d\/([A-Za-z0-9]+)\/?$/i);
+  if(!match)throw Error('Invalid a.co path: '+u.pathname+'.');
+  return {shortUrl:'https://a.co/d/'+match[1]};
  }
  if(!['amazon.ca','www.amazon.ca','smile.amazon.ca'].includes(u.hostname))throw Error('Use an Amazon.ca or a.co product URL.');
  const m=u.pathname.match(/\/(?:dp|gp\/product|gp\/aw\/d)\/([A-Z0-9]{10})(?:\/|$)/i);
